@@ -19,3 +19,5 @@ php artisan ui bootstrap --auth > configure bootstrap ui and laravel auth
 npm install > install npm
 npm run dev > configure npm modules
 npm run watch > run watch for CSS and other changes
+
+php artisan db:seed > run default database table seed
