@@ -9,12 +9,13 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <td>#</td>
-                            <td>Description</td>
-                            <td>Amount</td>
-                            <td>Category</td>
-                            <td>Payment Method</td>
-                            <td>Created Date</td>
+                            <th>#</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Category</th>
+                            <th>Payment Method</th>
+                            <th>Created Date</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -26,6 +27,10 @@
                             <td>{{$expense->category}}</td>
                             <td>{{$expense->payment_method}}</td>
                             <td>{{$expense->date}}</td>
+                            <td>
+                                <a href="{{ route('expense.view', $expense->id) }}" class="mr-3">View</a>
+                                <a href="{{ route('expense.delete', $expense->id) }}">Delete</a>
+                            </td>
                         </tr>
                         @endforeach()
                     </tbody>

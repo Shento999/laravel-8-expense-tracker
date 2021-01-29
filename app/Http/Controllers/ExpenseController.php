@@ -11,34 +11,49 @@ use Illuminate\Support\Facades\Auth;
 class ExpenseController extends Controller
 {
     //
+
+    private $expenseCategories; // use globaly in all function
+    private $paymentMethods; // use globaly in all function
+    private $rules = []; // use validation globaly
+
+    public function __construct()
+    {
+        $this->expenseCategories = config('expense.expense_category');
+        $this->paymentMethods = config('expense.payment_method');
+        $this->rules = [
+            'description' => ['required', 'min:5'],
+            'date' => ['required', 'date'],
+            'amount' => ['required', 'min:1'],
+            'category' => ['required', Rule::in($this->expenseCategories)],
+            'payment_method' => ['required', Rule::in($this->paymentMethods)]
+        ];
+    }
+
     public function index() {
 
-        $expenses = Expense::orderByDesc('id')->paginate(5);
-        return view('expenses.expense-index')->with('expenses', $expenses);
+        $userId = Auth::user()->id;
+
+        $expenses = Expense::orderByDesc('id')
+            ->where('user_id', $userId)
+            ->paginate(5);
+        
+        return view('expenses.expense-index')
+            ->with('expenses', $expenses);
         
     }
 
     public function add() {
 
-        $expenseCategory = config('expense.expense_category');
-        $paymentMethod = config('expense.payment_method');
-
-        return view('expenses.expense-add')->with('expenseCategory', $expenseCategory)->with('paymentMethod', $paymentMethod);
+        return view('expenses.expense-add')
+            ->with('expense', new Expense)
+            ->with('categories', $this->expenseCategories)
+            ->with('paymentsMethods', $this->paymentMethods);
     
     }
 
     public function store(Request $request) {
-        
-        $expenseCategory = config('expense.expense_category');
-        $paymentMethod = config('expense.payment_method');
 
-        $postDate = $request->validate([
-            'description' => ['required', 'min:5'],
-            'date' => ['required', 'date'],
-            'amount' => ['required', 'min:1'],
-            'category' => ['required', Rule::in($expenseCategory)],
-            'payment_method' => ['required', Rule::in($paymentMethod)]
-        ]);
+        $postDate = $this->validate($request, $this->rules);
 
         $postDate['user_id'] = Auth::user()->id;
 
@@ -47,5 +62,43 @@ class ExpenseController extends Controller
         return redirect()->back();
     
     }
+
+    public function view(Expense $expense) {
+        
+        return view('expenses.expense-view')
+            ->with('expense', $expense)
+            ->with('categories', $this->expenseCategories)
+            ->with('paymentsMethods', $this->paymentMethods);
+
+    }
+
+    public function update(Request $request) {
+
+        $this->rules['id'] = ['required', 'exists:expenses,id'];
+
+        $postDate = $this->validate($request, $this->rules);
+
+        $expenseId = $postDate['id'];
+        unset($postDate['id']);
+    
+        Expense::where('id', $expenseId)
+            ->update($postDate);
+         
+        return redirect()->back();
+
+    }
+
+    public function delete(Expense $expense) {
+
+        if($expense->user_id != Auth::user()->id) {
+            abort(401, 'You can not delete the other user expense!');
+        }
+
+        $expense->delete();
+
+        return redirect()->route('expense.list');
+
+    }
+
 
 }

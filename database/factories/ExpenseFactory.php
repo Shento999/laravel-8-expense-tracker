@@ -30,7 +30,7 @@ class ExpenseFactory extends Factory
             'date' => $this->faker->date('Y-m-d'),
             'amount' => $this->faker->numberBetween('50', '500'),
             'category' => $this->faker->randomElement($expenseCategory, 1),
-            'user_id' => 1,
+            'user_id' => 2,
             'payment_method' => $this->faker->randomElement($paymentMethod, 1),
         ];
     }

@@ -7,12 +7,12 @@
             <div class="col-12 col-sm-12 col-md-5">
                 <div class="card">
                     <div class="card-header">
-                        Add Expense
+                        View Expense
                     </div>
                     <div class="card-body">
-                        <form action="{{route('expense.save')}}" method="post">
+                        <form action="{{route('expense.update')}}" method="post">
                             @include('expenses.expense-form-partial')
-                            <button type="submit" class="btn btn-primary">Add Expense</button>
+                            <button type="submit" class="btn btn-primary">Update Expense</button>
                         </form>
                     </div>
                 </div>
