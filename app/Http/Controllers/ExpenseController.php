@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ExpenseController extends Controller
 {
@@ -36,18 +36,20 @@ class ExpenseController extends Controller
         $expenses = Expense::orderByDesc('id')
             ->where('user_id', $userId)
             ->paginate(5);
-        
-        return view('expenses.expense-index')
-            ->with('expenses', $expenses);
+
+        return Inertia::render('Expenses/index', [
+            'expenses' => $expenses,
+        ]);
         
     }
 
     public function add() {
 
-        return view('expenses.expense-add')
-            ->with('expense', new Expense)
-            ->with('categories', $this->expenseCategories)
-            ->with('paymentsMethods', $this->paymentMethods);
+        return Inertia::render('Expenses/add/index', [
+            'expense' => new Expense,
+            'expenses' => $this->expenseCategories,
+            'paymentMethods' => $this->paymentMethods,
+        ]);
     
     }
 
@@ -59,16 +61,19 @@ class ExpenseController extends Controller
 
         Expense::create($postDate);
 
-        return redirect()->back();
+        return redirect()
+            ->back()
+            ->with('success', 'Expense added');
     
     }
 
     public function view(Expense $expense) {
         
-        return view('expenses.expense-view')
-            ->with('expense', $expense)
-            ->with('categories', $this->expenseCategories)
-            ->with('paymentsMethods', $this->paymentMethods);
+        return Inertia::render('Expenses/view/index', [
+            'expense' => $expense,
+            'expenses' => $this->expenseCategories,
+            'paymentMethods' => $this->paymentMethods,
+        ]);
 
     }
 
@@ -84,7 +89,10 @@ class ExpenseController extends Controller
         Expense::where('id', $expenseId)
             ->update($postDate);
          
-        return redirect()->back();
+        return redirect()
+        ->back()
+        ->with('success', 'Expense updated');
+        //return redirect()->route('expense.list');
 
     }
 

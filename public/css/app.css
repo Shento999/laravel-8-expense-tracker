@@ -10004,3 +10004,11 @@ h3 {
     border-color: #dee2e6;
   }
 }
+.error-feedback {
+  color: red;
+}
+
+.pointer {
+  cursor: pointer;
+  color: #3490dc;
+}
